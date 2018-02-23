@@ -95,7 +95,7 @@ class MySQL implements DriverInterface, LoggerAwareInterface
             // Log
             $this->log(sprintf('Connection failed to %s', $this->getDSN()), LogLevel::CRITICAL);
 
-            throw new DatabaseException('Connection error');
+            throw new DatabaseException(sprintf('Connection failed to %s (#%d - %s)', $this->getDSN(), $e->getCode() ?: 0, $e->getMessage()));
         }
     }
 
