@@ -285,11 +285,11 @@ class Collection implements CollectionInterface
         foreach ($this as $key => $obj) {
             if (!is_null($property)) {
                 $exists = false;
-                $value = b_property_get($obj, $property, $exists);
+                $valueProp = b_property_get($obj, $property, $exists);
 
                 if ($exists === true) {
-                    if ((true === $strict && $value === $value)
-                        || (false === $strict && $value == $value)
+                    if ((true === $strict && $valueProp === $value)
+                        || (false === $strict && $valueProp == $value)
                     ) {
                         $found[] = $obj;
                     }
