@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager\Driver;
 
-
 use Berlioz\DbManager\Exception\DatabaseException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -67,23 +66,52 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      */
     public function __construct(array $options)
     {
+        $this->options = ['driver'      => 'mysql',
+                          'unix_socket' => null,
+                          'host'        => null,
+                          'port'        => 3306,
+                          'encoding'    => mb_internal_encoding(),
+                          'timeout'     => 5,
+                          'dbname'      => null,
+                          'username'    => null,
+                          'password'    => null];
+        $this->options = array_merge($this->options, $options);
+
+        $this->initPDO();
+    }
+
+    /**
+     * DB MySQL destructor.
+     */
+    public function __destruct()
+    {
+        // Log
+        $this->log(sprintf('Disconnection from %s', $this->getDSN()));
+    }
+
+    /**
+     * __sleep() PHP magic method.
+     *
+     * @return array
+     */
+    public function __sleep()
+    {
+        return ['options'];
+    }
+
+    /**
+     * Init PDO.
+     *
+     * @throws \Berlioz\DbManager\Exception\DatabaseException If an error occurred during \PDO connection
+     */
+    private function initPDO()
+    {
         try {
-            $this->options = ['driver'      => 'mysql',
-                              'unix_socket' => null,
-                              'host'        => null,
-                              'port'        => 3306,
-                              'encoding'    => mb_internal_encoding(),
-                              'timeout'     => 5,
-                              'dbname'      => null,
-                              'username'    => null,
-                              'password'    => null];
-            $this->options = array_merge($this->options, $options);
 
             // \PDO options
             $pdoOptions = [\PDO::ATTR_TIMEOUT => (int) $this->options['timeout']];
 
             // Creation of \PDO objects
-            $this->transactionStarted = false;
             $this->pdo = new \PDO($this->getDSN(),
                                   (string) $this->options['username'],
                                   (string) $this->options['password'],
@@ -97,15 +125,6 @@ class MySQL implements DriverInterface, LoggerAwareInterface
 
             throw new DatabaseException(sprintf('Connection failed to %s (#%d - %s)', $this->getDSN(), $e->getCode() ?: 0, $e->getMessage()));
         }
-    }
-
-    /**
-     * DB MySQL destructor.
-     */
-    public function __destruct()
-    {
-        // Log
-        $this->log(sprintf('Disconnection from %s', $this->getDSN()));
     }
 
     /**
