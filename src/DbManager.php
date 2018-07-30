@@ -35,6 +35,7 @@ class DbManager implements LoggerAwareInterface
      * @param array $options Options
      *
      * @throws \InvalidArgumentException if one argument is invalid
+     * @throws \ReflectionException
      */
     public function __construct(array $options = [])
     {
