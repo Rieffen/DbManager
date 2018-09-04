@@ -12,7 +12,9 @@
 
 namespace Berlioz\DbManager\Driver;
 
+use Berlioz\DbManager\Exception\ConnectionException;
 use Berlioz\DbManager\Exception\DatabaseException;
+use Berlioz\DbManager\Exception\TimeoutException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
@@ -62,7 +64,7 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      *
      * @param array $options Database connection options
      *
-     * @throws \Berlioz\DbManager\Exception\DatabaseException If an error occurred during \PDO connection
+     * @throws \Berlioz\DbManager\Exception\ConnectionException If an error occurred during \PDO connection
      */
     public function __construct(array $options)
     {
@@ -102,12 +104,11 @@ class MySQL implements DriverInterface, LoggerAwareInterface
     /**
      * Init PDO.
      *
-     * @throws \Berlioz\DbManager\Exception\DatabaseException If an error occurred during \PDO connection
+     * @throws \Berlioz\DbManager\Exception\ConnectionException If an error occurred during \PDO connection
      */
     private function initPDO()
     {
         try {
-
             // \PDO options
             $pdoOptions = [\PDO::ATTR_TIMEOUT => (int) $this->options['timeout']];
 
@@ -117,13 +118,15 @@ class MySQL implements DriverInterface, LoggerAwareInterface
                                   (string) $this->options['password'],
                                   $pdoOptions);
 
+            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
             // Log
             $this->log(sprintf('Connection to %s', $this->getDSN()));
         } catch (\Exception $e) {
             // Log
             $this->log(sprintf('Connection failed to %s', $this->getDSN()), LogLevel::CRITICAL);
 
-            throw new DatabaseException(sprintf('Connection failed to %s (#%d - %s)', $this->getDSN(), $e->getCode() ?: 0, $e->getMessage()));
+            throw new ConnectionException(sprintf('Connection failed to %s (#%d - %s)', $this->getDSN(), $e->getCode() ?: 0, $e->getMessage()));
         }
     }
 
@@ -235,25 +238,35 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      * @param  array  $arguments Arguments list
      *
      * @return mixed
+     * @throws \Berlioz\DbManager\Exception\DatabaseException
      */
     public function __call($name, array $arguments)
     {
-        // Return value
-        $returnValue = call_user_func_array([&$this->pdo, $name], $arguments);
+        try {
+            $returnValue = @$this->pdo->$name(...$arguments);
 
-        // Log
-        switch ($name) {
-            case 'exec':
-            case 'prepare':
-            case 'query':
-                $this->log(sprintf('%s "%s"', ucwords($name), $arguments[0] ?? 'N/A'), LogLevel::INFO);
+            return $returnValue;
+        } catch (\PDOException $e) {
+            if ($e->getCode() == 'HY000') {
+                throw new TimeoutException($e->getMessage(), 0, $e);
+            }
+
+            throw new DatabaseException($e->getMessage(), $e->getCode(), $e);
+        } finally {
+            // Log
+            switch ($name) {
+                case 'exec':
+                case 'prepare':
+                case 'query':
+                    $this->log(sprintf('%s "%s"', ucwords($name), $arguments[0] ?? 'N/A'), LogLevel::INFO);
+            }
         }
-
-        return $returnValue;
     }
 
     /**
      * Begin a transaction.
+     *
+     * @throws \Berlioz\DbManager\Exception\DatabaseException
      */
     public function beginTransaction()
     {
@@ -267,6 +280,8 @@ class MySQL implements DriverInterface, LoggerAwareInterface
 
     /**
      * Commit a transaction.
+     *
+     * @throws \Berlioz\DbManager\Exception\DatabaseException
      */
     public function commit()
     {
@@ -280,6 +295,8 @@ class MySQL implements DriverInterface, LoggerAwareInterface
 
     /**
      * Rollback a transaction.
+     *
+     * @throws \Berlioz\DbManager\Exception\DatabaseException
      */
     public function rollBack()
     {

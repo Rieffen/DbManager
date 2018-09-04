@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager\Entity;
 
-
 interface EntityInterface
 {
 }

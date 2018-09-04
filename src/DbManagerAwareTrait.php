@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager;
 
-
 trait DbManagerAwareTrait
 {
     /** @var \Berlioz\DbManager\DbManager DB Manager */

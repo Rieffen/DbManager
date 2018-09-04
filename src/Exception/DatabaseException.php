@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager\Exception;
 
-
 class DatabaseException extends DbManagerException
 {
 }

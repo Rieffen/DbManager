@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager\Repository;
 
-
 use Berlioz\DbManager\DbManagerAwareInterface;
 use Berlioz\DbManager\DbManagerAwareTrait;
 use Berlioz\DbManager\Driver\DriverInterface;

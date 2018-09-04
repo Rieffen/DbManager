@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager;
 
-
 use Berlioz\DbManager\Driver\DriverInterface;
 use Berlioz\DbManager\Exception\DbManagerException;
 use Berlioz\DbManager\Repository\RepositoryInterface;

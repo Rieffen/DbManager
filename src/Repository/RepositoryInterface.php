@@ -12,7 +12,6 @@
 
 namespace Berlioz\DbManager\Repository;
 
-
 interface RepositoryInterface
 {
 }

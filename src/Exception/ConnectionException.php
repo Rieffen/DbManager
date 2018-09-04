@@ -10,8 +10,8 @@
  * file that was distributed with this source code, to the root.
  */
 
-namespace Berlioz\DbManager\Entity;
+namespace Berlioz\DbManager\Exception;
 
-interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Countable, \JsonSerializable
+class ConnectionException extends DatabaseException
 {
 }
