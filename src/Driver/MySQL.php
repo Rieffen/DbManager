@@ -106,7 +106,7 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      *
      * @throws \Berlioz\DbManager\Exception\ConnectionException If an error occurred during \PDO connection
      */
-    private function initPDO()
+    protected function initPDO()
     {
         try {
             // \PDO options
@@ -136,7 +136,7 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      * @param string $message Message
      * @param string $level
      */
-    private function log(string $message, string $level = LogLevel::INFO)
+    protected function log(string $message, string $level = LogLevel::INFO)
     {
         if (!is_null($this->logger)) {
             $this->logger->log(sprintf('%s / %s', get_class($this), $message), $level);
@@ -148,7 +148,7 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      *
      * @return string DSN
      */
-    private function getDSN()
+    protected function getDSN()
     {
         $dsn = "{$this->options['driver']}:";
 
@@ -378,7 +378,7 @@ class MySQL implements DriverInterface, LoggerAwareInterface
      *
      * @return string
      */
-    private function convertCharacterEncoding($content)
+    protected function convertCharacterEncoding($content)
     {
         if (is_string($content) && !empty($content)) {
             $encoding = mb_detect_encoding($content, mb_detect_order(), true);
