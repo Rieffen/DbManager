@@ -276,6 +276,7 @@ class Collection implements CollectionInterface
      * @param bool   $strict   Strict result
      *
      * @return \Berlioz\DbManager\Entity\EntityInterface[]
+     * @throws \ReflectionException
      */
     public function find($value, $property = null, $strict = false): array
     {
@@ -284,7 +285,7 @@ class Collection implements CollectionInterface
         foreach ($this as $key => $obj) {
             if (!is_null($property)) {
                 $exists = false;
-                $valueProp = b_property_get($obj, $property, $exists);
+                $valueProp = b_get_property_value($obj, $property, $exists);
 
                 if ($exists === true) {
                     if ((true === $strict && $valueProp === $value)

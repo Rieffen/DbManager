@@ -23,13 +23,15 @@ class Entity implements EntityInterface
      * Entity constructor.
      *
      * @param array $data Data to complete entity
+     *
+     * @throws \ReflectionException
      */
     public function __construct(array $data = [])
     {
         // Complete properties with data passed in function
         if (!empty($data)) {
             foreach ($data as $key => $value) {
-                b_property_set($this, $key, $value);
+                b_set_property_value($this, $key, $value);
             }
         }
     }

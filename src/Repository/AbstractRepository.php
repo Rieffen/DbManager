@@ -44,11 +44,12 @@ abstract class AbstractRepository implements RepositoryInterface, DbManagerAware
      * @param array                                     $values Values
      *
      * @return object
+     * @throws \ReflectionException
      */
     protected function giveValues(EntityInterface $obj, array $values)
     {
         foreach ($values as $key => $value) {
-            b_property_set($obj, $key, $value);
+            b_set_property_value($obj, $key, $value);
         }
 
         return $obj;
