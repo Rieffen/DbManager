@@ -22,7 +22,11 @@ class DbManager implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
     /** Default drivers into the package. */
-    const DEFAULT_DRIVERS = ['mysql' => '\Berlioz\DbManager\Driver\MySQL'];
+    const DEFAULT_DRIVERS = [
+        'mysql' => '\Berlioz\DbManager\Driver\MySQL',
+        'sqlite' => '\Berlioz\DbManager\Driver\SQLite'
+    ];
+    
     /** @var \Berlioz\DbManager\Driver\DriverInterface|null Driver */
     private $driver;
     /** @var \Berlioz\DbManager\Repository\RepositoryInterface[] Repositories */
