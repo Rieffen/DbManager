@@ -32,14 +32,14 @@ class Collection implements CollectionInterface
     public function __construct($entityClasses = null)
     {
         $this->list = [];
-        if (!empty($entityClass)) {
-
+        if (!empty($entityClasses)) {
             // Filter only on \Berlioz\DbManager\Entity\EntityInterface elements
             $entityClasses = (array) $entityClasses;
             $entityClasses =
                 array_filter($entityClasses,
                     function ($value) {
-                        return $value instanceof EntityInterface;
+                        $class = new \ReflectionClass($value);
+                        return  $class->implementsInterface(EntityInterface::class);
                     });
 
             $this->entityClasses = $entityClasses;
