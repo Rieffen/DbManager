@@ -38,8 +38,7 @@ class Collection implements CollectionInterface
             $entityClasses =
                 array_filter($entityClasses,
                     function ($value) {
-                        $class = new \ReflectionClass($value);
-                        return  $class->implementsInterface(EntityInterface::class);
+                        return  is_a($value, EntityInterface::class,true);
                     });
 
             $this->entityClasses = $entityClasses;
