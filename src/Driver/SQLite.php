@@ -277,10 +277,6 @@ class SQLite implements DriverInterface, LoggerAwareInterface
             if (null === $text) {
                 $text = 'NULL';
             } else {
-                if (get_magic_quotes_gpc()) {
-                    $text = stripslashes($text);
-                }
-
                 // Protect if it's not an integer
                 if (!is_numeric($text) || true === $forceQuote) {
                     // Strip tags
