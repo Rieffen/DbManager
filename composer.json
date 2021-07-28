@@ -25,7 +25,7 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-PDO": "*",
-    "berlioz/utils": "@dev",
+    "berlioz/utils": "dev-develop#dc26fa2",
     "psr/log": "1.0.2"
   },
   "require-dev": {
